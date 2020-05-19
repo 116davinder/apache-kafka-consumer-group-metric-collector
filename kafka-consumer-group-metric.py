@@ -66,7 +66,7 @@ def main():
     for line in open(inputFile):
         line = line.strip()
         if not line.startswith("#") and len(line) > 0:
-            topic = line.split()[0] + "." + env.split("-kafka")[0]
+            topic = line.split()[0]
             group_id = line.split()[1]
             try:
                 kc = KCMetric(topic.strip(), group_id.strip(), logDir, env)
