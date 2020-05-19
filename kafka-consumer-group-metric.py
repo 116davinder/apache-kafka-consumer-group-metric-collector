@@ -44,17 +44,15 @@ class KCMetric:
                 committed_offset = 0
             for _, v in consumer.end_offsets([tp]).items():
                 latest_offset = v
-            lag = latest_offset - committed_offset
             self.metricJsonDict["partition"][p] = {}
             self.metricJsonDict["partition"][p]["committed_offset"] = committed_offset
             self.metricJsonDict["partition"][p]["latest_offset"] = latest_offset
-            self.metricJsonDict["partition"][p]["lag"] = lag
+            self.metricJsonDict["partition"][p]["lag"] = latest_offset - committed_offset
 
         with open(self.LOGDIR + "kafka-consumer-group-metrics.log", 'a+') as logFile:
             logFile.write("\n")
             logFile.write(json.dumps(self.metricJsonDict))
             logFile.write("\n")
-        # print(json.dumps(metricJsonDict))
         consumer.close(autocommit=False)
 
 def main():
@@ -66,12 +64,15 @@ def main():
     open(logDir + "/kafka-consumer-group-metrics.log", 'w').close()
 
     for line in open(inputFile):
-        topic = line.split()[0] + "." + env.split("-kafka")[0]
-        group_id = line.split()[1]
-        try:
-            kc = KCMetric(topic.strip(), group_id.strip(), logDir, env)
-            if kc.checkConsumerGroupName():
-                kc.getMetric()
-        except:
-            print("something failed")
+        line = line.strip()
+        if not line.startswith("#") and len(line) > 0:
+            topic = line.split()[0] + "." + env.split("-kafka")[0]
+            group_id = line.split()[1]
+            try:
+                kc = KCMetric(topic.strip(), group_id.strip(), logDir, env)
+                if kc.checkConsumerGroupName():
+                    kc.getMetric()
+            except:
+                print("something failed")
+
 main()
