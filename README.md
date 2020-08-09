@@ -1,3 +1,5 @@
+**This repo is not required as latest code for it will be maintained in https://github.com/116davinder/kafka-cluster-ansible/blob/master/roles/jmxMonitor/tasks/kafka-consumer-group-metric.yml**
+
 # apache-kafka-consumer-group-metric-collector
 It will collect metric about given consumer groups and reports latest_offset, committed_offset, and lag.
 
